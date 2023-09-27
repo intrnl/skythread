@@ -47,9 +47,6 @@ class PostComponent {
     let div = document.createElement('div');
     div.className = 'post';
 
-    if (this.post.muted) {
-      div.classList.add('muted');
-    }
 
     if (this.post.missing) {
       this.buildBlockedPostElement(div);
@@ -84,24 +81,7 @@ class PostComponent {
       }
     }
 
-    let wrapper;
-
-    if (this.post.muted) {
-      let details = document.createElement('details');
-      let summary = document.createElement('summary');
-
-      if (this.post.muteList) {
-        summary.innerText = `Muted (${this.post.muteList})`;
-      } else {
-        summary.innerText = 'Muted - click to show';
-      }
-
-      details.appendChild(summary);
-      content.appendChild(details);
-      wrapper = details;
-    } else {
-      wrapper = content;
-    }
+    let wrapper = content;
 
     let p = document.createElement('p');
     p.innerText = this.post.text;
@@ -158,11 +138,7 @@ class PostComponent {
         `<i class="fa-solid fa-arrows-split-up-and-left fa-rotate-180"></i></a> `;
     }
 
-    if (this.post.muted) {
-      let muted = document.createElement('i');
-      muted.className = 'missing fa-regular fa-circle-user fa-2x';
-      h.prepend(muted);
-    } else if (this.post.author.avatar) {
+    if (this.post.author.avatar) {
       let avatar = document.createElement('img');
       avatar.src = this.post.author.avatar;
       avatar.className = 'avatar';
@@ -182,8 +158,7 @@ class PostComponent {
 
     let span = document.createElement('span');
     let heart = document.createElement('i');
-    heart.className = 'fa-solid fa-heart ' + (this.post.liked ? 'liked' : '');
-    heart.addEventListener('click', (e) => this.onHeartClick(heart));
+    heart.className = 'fa-solid fa-heart';
     span.append(heart);
     span.append(' ');
 
@@ -227,23 +202,16 @@ class PostComponent {
     let authorLink = p.querySelector('a');
     let did = atURI(this.post.uri).repo;
     let cachedHandle = api.findHandleByDid(did);
-    let blockStatus = this.post.blockedByUser ? 'has blocked you' : this.post.blocksUser ? 'blocked by you' : '';
 
     if (cachedHandle) {
       this.post.author.handle = cachedHandle;
       authorLink.href = this.linkToAuthor;
       authorLink.innerText = `@${cachedHandle}`;
-      if (blockStatus) {
-        authorLink.after(`, ${blockStatus}`);
-      }
     } else {
       api.loadRawProfileRecord(did).then((author) => {
         this.post.author = author;
         authorLink.href = this.linkToAuthor;
         authorLink.innerText = `@${author.handle}`;
-        if (blockStatus) {
-          authorLink.after(`, ${blockStatus}`);
-        }
       });      
     }
 
@@ -301,27 +269,4 @@ class PostComponent {
     }
   }
 
-  onHeartClick(heart) {
-    let count = heart.nextElementSibling;
-
-    if (!heart.classList.contains('liked')) {
-      api.likePost(this.post).then((like) => {
-        this.post.viewerLike = like.uri;
-        heart.classList.add('liked');
-        count.innerText = parseInt(count.innerText, 10) + 1;
-      }).catch((error) => {
-        console.log(error);
-        alert(error);
-      });
-    } else {
-      api.removeLike(this.post.viewerLike).then(() => {
-        this.post.viewerLike = undefined;
-        heart.classList.remove('liked');
-        count.innerText = parseInt(count.innerText, 10) - 1;
-      }).catch((error) => {
-        console.log(error);
-        alert(error);
-      });
-    }
-  }
 }

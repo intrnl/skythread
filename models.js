@@ -74,8 +74,6 @@ class Post extends Record {
       this.embed = Embed.parse(this.record.embed);
     }
 
-    this.viewerLike = data.viewer?.like;
-
     if (this.author) {
       api.cacheProfile(this.author);      
     }
@@ -105,18 +103,6 @@ class Post extends Record {
     return this.data.repostCount;
   }
 
-  get liked() {
-    return (this.viewerLike !== undefined);
-  }
-
-  get muted() {
-    return this.author.viewer?.muted;
-  }
-
-  get muteList() {
-    return this.author.viewer?.mutedByList?.name;
-  }
-
   get parentReference() {
     return this.record.reply?.parent && new Record(this.record.reply?.parent);
   }
@@ -133,14 +119,6 @@ class BlockedPost extends Record {
     this.blocked = true;
     this.missing = true;
     this.author = data.author;
-  }
-
-  get blocksUser() {
-    return !!this.author.viewer?.blocking;
-  }
-
-  get blockedByUser() {
-    return this.author.viewer?.blockedBy;
   }
 }
 
