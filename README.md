@@ -1,3 +1,7 @@
+Forked version of Kuda Suder's Skythread, points the app directly towards Bluesky's Production App View instead of bsky.social PDS, this means there isn't a need to authenticate with your app password as the App View allows for viewing without authorization tokens (by design)
+
+---
+
 # Skythread
 
 Skythread is a web tool that allows you to read long Bluesky threads in the form of a tree of comments nested under one another, like e.g. on Reddit, to make it easier to see which comment is a reply to which.
