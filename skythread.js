@@ -78,9 +78,9 @@ function submitSearch() {
   if (!url) { return }
 
   try {
-    let [handle, postId] = BlueskyAPI.parsePostURL(url);
+    let [author, rkey] = BlueskyAPI.parsePostURL(url);
 
-    let newURL = linkToPostById(handle, postId);
+    let newURL = linkToPostById(author, rkey);
     location.assign(newURL);
   } catch (error) {
     console.log(error);

@@ -41,6 +41,8 @@ class HandleCache {
   }
 }
 
+let POST_RE = /^(?:https?:\/\/)?((?:staging\.)?bsky\.app|langit\.pages\.dev\/r)\/profile\/([^\/]+)\/post\/([^\/]+)\s*$/;
+
 class BlueskyAPI {
   constructor() {
     this.handleCache = new HandleCache();
@@ -90,32 +92,16 @@ class BlueskyAPI {
   }
 
   static parsePostURL(string) {
-    let url;
+    let match = POST_RE.exec(string);
 
-    try {
-      url = new URL(string);
-    } catch (error) {
-      throw new URLError("This is not a valid URL");
+    if (!match) {
+      throw new URLError(`invalid post URL!`);
     }
 
-    if (url.protocol != 'https:') {
-      throw new URLError('URL must start with https://');
-    }
+    let author = match[2];
+    let rkey = match[3];
 
-    if (!(url.host == 'staging.bsky.app' || url.host == 'bsky.app')) {
-      throw new URLError('Only bsky.app and staging.bsky.app URLs are supported');
-    }
-
-    let parts = url.pathname.split('/');
-
-    if (parts.length < 5 || parts[1] != 'profile' || parts[3] != 'post') {
-      throw new URLError('This is not a valid thread URL');
-    }
-
-    let handle = parts[2];
-    let postId = parts[4];
-
-    return [handle, postId];
+    return [author, rkey];
   }
 
   async resolveHandle(handle) {
@@ -132,8 +118,8 @@ class BlueskyAPI {
   }
 
   async loadThreadByURL(url) {
-    let [handle, postId] = BlueskyAPI.parsePostURL(url);
-    return await this.loadThreadById(handle, postId);
+    let [author, rkey] = BlueskyAPI.parsePostURL(url);
+    return await this.loadThreadById(author, rkey);
   }
 
   async loadThreadById(author, postId) {
