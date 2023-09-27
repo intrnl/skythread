@@ -1,15 +1,6 @@
 function init() {
   window.dateLocale = localStorage.getItem('locale') || undefined;
 
-  document.querySelector('#login .info a').addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleLoginInfo();
-  });
-
-  document.querySelector('#login form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    submitLogin();
-  });
 
   document.querySelector('#search form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -26,11 +17,7 @@ function init() {
 
   window.api = new BlueskyAPI();
 
-  if (api.isLoggedIn) {
-    parseQueryParams();
-  } else {
-    showLogin();
-  }
+  parseQueryParams();
 }
 
 function parseQueryParams() {
@@ -83,43 +70,6 @@ function showSearch() {
 
 function hideSearch() {
   document.getElementById('search').style.visibility = 'hidden';
-}
-
-function showLogin() {
-  document.getElementById('login').style.visibility = 'visible';
-}
-
-function hideLogin() {
-  document.getElementById('login').style.visibility = 'hidden';
-}
-
-function toggleLoginInfo(event) {
-  document.getElementById('login').classList.toggle('expanded');
-}
-
-function submitLogin() {
-  let handle = document.getElementById('login_handle');
-  let password = document.getElementById('login_password');
-  let submit = document.getElementById('login_submit');
-  let cloudy = document.getElementById('cloudy');
-
-  if (submit.style.display == 'none') { return }
-
-  handle.blur();
-  password.blur();
-
-  submit.style.display = 'none';
-  cloudy.style.display = 'inline-block';
-
-  api.logIn(handle.value, password.value).then(() => {
-    hideLogin();
-    parseQueryParams();
-  }).catch((error) => {
-    submit.style.display = 'inline';
-    cloudy.style.display = 'none';
-    console.log(error);
-    alert(error);
-  });
 }
 
 function submitSearch() {
